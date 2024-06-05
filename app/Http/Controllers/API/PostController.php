@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Models\Post;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 
@@ -14,13 +15,8 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::all();
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Posts récupérés avec succès',
-            'users' => $posts
-        ]);
+        $posts = Post::with('user')->orderBy('created_at', 'desc')->get();
+        return response()->json(['posts' => $posts]);
     }
 
     /**
@@ -28,25 +24,34 @@ class PostController extends Controller
      */
     public function store(StorePostRequest $request)
     {
-        $post = Post::create($request->all());
+        $validatedData = $request->validated();
+
+        $post = new Post();
+        $post->content = $validatedData['content'];
+        $post->tags = $validatedData['tags'];
+        $post->user_id = Auth::id();
+
+        $post->save();
 
         return response()->json([
             'status' => true,
             'message' => 'Post créé avec succès',
-            'user' => $post
+            'post' => $post
         ], 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Post $post)
+    public function show($id)
     {
-        return response()->json([
-            'status' => true,
-            'message' => 'Post trouvé avec succès',
-            'user' => $post
-        ]);
+        $post = Post::with('user')->find($id);
+
+        if (!$post) {
+            return response()->json(['message' => 'Post not found'], 404);
+        }
+
+        return response()->json(['post' => $post]);
     }
 
     /**

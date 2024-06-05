@@ -23,7 +23,6 @@ class UpdatePostRequest extends FormRequest
     {
         return [
             'content' => 'required|string',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,svg|max:2048',
             'tags' => 'required|string',
         ];
     }

@@ -25,6 +25,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('user', [AuthController::class, 'update']);
     Route::delete('user', [AuthController::class, 'destroy']);
     Route::apiResource('posts', PostController::class);
+    
     Route::apiResource('comments', CommentController::class);
 });
 

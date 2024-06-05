@@ -3,6 +3,9 @@ import App from '../App.vue'
 import Login from '../components/Login.vue'
 import Register from '../components/Register.vue'
 import UserProfile from '../components/UserProfile.vue'
+import PostForm from '../components/PostForm.vue'
+import Home from '../components/Home.vue'
+import PostDetail from '../components/PostDetail.vue'
 
 
 const router = createRouter({
@@ -10,7 +13,8 @@ const router = createRouter({
     routes: [
         {
             path: '/',
-            component: App
+            name: 'Home',
+            component: Home
         },
         {
             path: '/login',
@@ -27,7 +31,19 @@ const router = createRouter({
             name: 'UserProfile',
             component: UserProfile,
             meta: { requiresAuth: true }
-          }
+          },
+          {
+            path: '/posts/:id',
+            name: 'PostDetail',
+            component: PostDetail,
+            props: true
+          },
+          {
+    path: '/create-post',
+    name: 'CreatePost',
+    component: PostForm,
+    meta: { requiresAuth: true }
+  }
     ]
 })
 
