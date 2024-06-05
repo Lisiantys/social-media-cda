@@ -1,37 +1,60 @@
 <template>
   <div>
-    <h2>Create Post</h2>
+    <h2>{{ post ? 'Edit Post' : 'Create Post' }}</h2>
     <form @submit.prevent="submitForm">
       <textarea v-model="form.content" placeholder="Content" required></textarea>
       <input type="text" v-model="form.tags" placeholder="Tags" required />
-      <button type="submit">Create Post</button>
+      <button type="submit">{{ post ? 'Update Post' : 'Create Post' }}</button>
     </form>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, watchEffect } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 
 export default {
-  setup() {
+  props: {
+    post: {
+      type: Object,
+      default: null
+    }
+  },
+  setup(props) {
     const form = ref({
       content: '',
       tags: ''
     })
     const router = useRouter()
 
+    watchEffect(() => {
+      if (props.post) {
+        form.value.content = props.post.content
+        form.value.tags = props.post.tags
+      }
+    })
+
     const submitForm = async () => {
       try {
-        await axios.post('/api/posts', form.value, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-          }
-        })
+        if (props.post) {
+          // Update existing post
+          await axios.put(`/api/posts/${props.post.id}`, form.value, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+          })
+        } else {
+          // Create new post
+          await axios.post('/api/posts', form.value, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+          })
+        }
         router.push('/')
       } catch (error) {
-        console.error('Error creating post:', error)
+        console.error('Error saving post:', error)
       }
     }
 

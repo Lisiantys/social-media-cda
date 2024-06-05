@@ -59,12 +59,16 @@ class PostController extends Controller
      */
     public function update(UpdatePostRequest $request, Post $post)
     {
-        $post->update($request->all());
+        $validatedData = $request->validated();
+
+        $post->content = $validatedData['content'];
+        $post->tags = $validatedData['tags'];
+        $post->save();
 
         return response()->json([
             'status' => true,
             'message' => 'Post mis à jour avec succès',
-            'user' => $post
+            'post' => $post
         ]);
     }
 
@@ -74,11 +78,9 @@ class PostController extends Controller
     public function destroy(Post $post)
     {
         $post->delete();
-
         return response()->json([
             'status' => true,
-            'message' => 'Post supprimé avec succès',
-            'user' => $post
+            'message' => 'Post supprimé avec succès'
         ]);
     }
 }
