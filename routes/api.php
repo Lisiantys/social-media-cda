@@ -1,9 +1,8 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\PostController;
-use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\CommentController;
 
 /*
@@ -17,11 +16,15 @@ use App\Http\Controllers\API\CommentController;
 |
 */
 
-Route::apiResource('users', UserController::class);
-Route::apiResource('posts', PostController::class);
-Route::apiResource('comments', CommentController::class);
 
+Route::post('register', [AuthController::class, 'register']);
+Route::post('login', [AuthController::class, 'login']);
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('user', [AuthController::class, 'user']);
+    Route::put('user', [AuthController::class, 'update']);
+    Route::delete('user', [AuthController::class, 'destroy']);
+    Route::apiResource('posts', PostController::class);
+    Route::apiResource('comments', CommentController::class);
+});
+
